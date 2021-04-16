@@ -7,4 +7,5 @@ export interface Slackbot {
   repository: string;
   tags: string[];
   id: string;
+  gettingStarted: string;
 }

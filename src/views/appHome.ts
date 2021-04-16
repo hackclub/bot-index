@@ -16,7 +16,7 @@ export default function appHomeBlocks({
       text: {
         type: "mrkdwn",
         text:
-          ":sparkles: here you'll find various Slack apps built by the community! :sparkles:",
+          ":sparkles: here you'll find various Slack apps built by the community!",
       },
       accessory: {
         type: "static_select",
@@ -28,6 +28,9 @@ export default function appHomeBlocks({
         initial_option: selected_tag,
         options: tags,
       },
+    },
+    {
+      type: "divider",
     },
     ...apps.flatMap((i): (Block | KnownBlock)[] => {
       return [

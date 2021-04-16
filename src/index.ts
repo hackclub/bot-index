@@ -48,6 +48,7 @@ function parseAirtableSlackbot(record: any): Slackbot {
     repository: record.fields["Repository URL"],
     tags: record.fields["Tags"],
     id: record.id,
+    gettingStarted: record.fields["Getting Started"],
   };
 }
 
