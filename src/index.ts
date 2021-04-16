@@ -1,7 +1,14 @@
-import { App, Option, StaticSelectAction } from "@slack/bolt";
-import dotenv from "dotenv";
+import {
+  App,
+  BlockElementAction,
+  Option,
+  StaticSelectAction,
+} from "@slack/bolt";
+import dotenv, { parse } from "dotenv";
 import airtable from "airtable";
-import appHomeBlocks, { Slackbot } from "./appHome";
+import appHomeBlocks from "./views/appHome";
+import { Slackbot } from "./models";
+import singleApp from "./views/singleApp";
 
 dotenv.config();
 
@@ -31,17 +38,61 @@ const tags: Option[] = [
   },
 ];
 
-function parseAirtableSlackbot(fields: any): Slackbot {
+function parseAirtableSlackbot(record: any): Slackbot {
   return {
-    maintainer: fields["Maintainer"],
-    emoji: fields["Emoji"],
-    id: fields["Bot ID"],
-    name: fields["Name"],
-    description: fields["Description"],
-    repository: fields["Repository URL"],
-    tags: fields["Tags"],
+    maintainer: record.fields["Maintainer"],
+    emoji: record.fields["Emoji"],
+    botId: record.fields["Bot ID"],
+    name: record.fields["Name"],
+    description: record.fields["Description"],
+    repository: record.fields["Repository URL"],
+    tags: record.fields["Tags"],
+    id: record.id,
   };
 }
+
+app.action("back", async ({ client, body, ack }) => {
+  await ack();
+
+  const apps = (await base.select().all()).map(parseAirtableSlackbot);
+
+  await client.views.publish({
+    user_id: body.user.id,
+    view: {
+      type: "home",
+      blocks: appHomeBlocks({
+        apps,
+        tags,
+        selected_tag: {
+          text: { type: "plain_text", text: "All categories" },
+          value: "All",
+        },
+      }),
+    },
+  });
+});
+
+app.action(/view:(.+)/, async ({ client, body, ack, ...args }) => {
+  await ack();
+
+  const action = args.action as BlockElementAction;
+  const matches = action.action_id.match(/view:(.+)/);
+  if (!matches) {
+    return;
+  }
+
+  const [, recordId] = matches;
+
+  const record = parseAirtableSlackbot(await base.find(recordId));
+
+  await client.views.publish({
+    user_id: body.user.id,
+    view: {
+      type: "home",
+      blocks: singleApp(record),
+    },
+  });
+});
 
 app.action("tag", async ({ body, client, ack, ...args }) => {
   await ack();
@@ -51,7 +102,7 @@ app.action("tag", async ({ body, client, ack, ...args }) => {
   const category = action.selected_option.value;
 
   const apps = (await base.select().all())
-    .map((i) => parseAirtableSlackbot(i.fields))
+    .map(parseAirtableSlackbot)
     .filter((i) => category == "All" || i.tags.includes(category));
 
   await client.views.publish({
@@ -68,9 +119,7 @@ app.action("tag", async ({ body, client, ack, ...args }) => {
 });
 
 app.event("app_home_opened", async ({ client, event }) => {
-  const apps = (await base.select().all()).map((i) =>
-    parseAirtableSlackbot(i.fields)
-  );
+  const apps = (await base.select().all()).map(parseAirtableSlackbot);
 
   await client.views.publish({
     user_id: event.user,

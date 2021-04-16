@@ -1,14 +1,5 @@
 import { Block, KnownBlock, Option } from "@slack/bolt";
-
-export interface Slackbot {
-  maintainer: string;
-  emoji: string | undefined;
-  id: string;
-  name: string;
-  description: string;
-  repository: string;
-  tags: string[];
-}
+import { Slackbot } from "../models";
 
 export default function appHomeBlocks({
   apps,
@@ -48,13 +39,13 @@ export default function appHomeBlocks({
               ":" +
               i.emoji +
               ": *" +
-              (i.id ? `<@${i.id}>` : i.name) +
+              (i.botId ? `<@${i.botId}>` : i.name) +
               "* - " +
               i.description,
           },
           accessory: {
             type: "button",
-            action_id: `app:${Math.random()}`,
+            action_id: `view:${i.id}`,
             text: {
               type: "plain_text",
               text: "Info",
