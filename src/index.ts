@@ -36,6 +36,10 @@ const tags: Option[] = [
     text: { type: "plain_text", text: "Utilities" },
     value: "Utilities",
   },
+  {
+    text: { type: "plain_text", text: "Community" },
+    value: "Community",
+  },
 ];
 
 function parseAirtableSlackbot(record: any): Slackbot {
