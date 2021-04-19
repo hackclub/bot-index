@@ -4,86 +4,46 @@ import {
   Option,
   StaticSelectAction,
 } from "@slack/bolt";
-import dotenv, { parse } from "dotenv";
-import airtable from "airtable";
+import dotenv from "dotenv";
+import yaml from "js-yaml";
+import { readFile } from "fs/promises";
+
 import appHomeBlocks from "./views/appHome";
-import { Slackbot } from "./models";
+import { Slackbot, YamlConfig } from "./models";
 import singleApp from "./views/singleApp";
 
 dotenv.config();
 
-const base = airtable.base("appZdcsR7RxCCDH5j").table("Apps");
+let config: YamlConfig;
 
 const app = new App({
   token: process.env.TOKEN,
   signingSecret: process.env.SIGNING_SECRET,
 });
 
-const tags: Option[] = [
+const tags = (): Option[] => [
   {
     text: { type: "plain_text", text: "All categories" },
     value: "All",
   },
-  {
-    text: { type: "plain_text", text: "HN" },
-    value: "HN",
-  },
-  {
-    text: { type: "plain_text", text: "Games" },
-    value: "Games",
-  },
-  {
-    text: { type: "plain_text", text: "Utilities" },
-    value: "Utilities",
-  },
-  {
-    text: { type: "plain_text", text: "Community" },
-    value: "Community",
-  },
+  ...config.categories.map(
+    (i): Option => ({
+      text: { type: "plain_text", text: i },
+      value: i,
+    })
+  ),
 ];
-
-function parseAirtableSlackbot(record: any): Slackbot {
-  return {
-    maintainer: record.fields["Maintainer"],
-    emoji: record.fields["Emoji"],
-    botId: record.fields["Bot ID"],
-    name: record.fields["Name"],
-    description: record.fields["Description"],
-    repository: record.fields["Repository URL"],
-    tags: record.fields["Tags"] || [],
-    id: record.id,
-    gettingStarted: record.fields["Getting Started"],
-  };
-}
-
-async function getApps(filter?: (e: Slackbot) => boolean): Promise<Slackbot[]> {
-  let apps = (
-    await base
-      .select({
-        filterByFormula: "Enabled",
-      })
-      .all()
-  ).map(parseAirtableSlackbot);
-
-  if (filter) {
-    apps = apps.filter(filter);
-  }
-
-  return apps;
-}
 
 app.action("back", async ({ client, body, ack }) => {
   await ack();
-
-  const apps = await getApps();
 
   await client.views.publish({
     user_id: body.user.id,
     view: {
       type: "home",
       blocks: appHomeBlocks({
-        apps,
-        tags,
+        apps: config.apps,
+        tags: tags(),
         selected_tag: {
           text: { type: "plain_text", text: "All categories" },
           value: "All",
@@ -102,15 +62,16 @@ app.action(/view:(.+)/, async ({ client, body, ack, ...args }) => {
     return;
   }
 
-  const [, recordId] = matches;
+  const [, appName] = matches;
 
-  const record = parseAirtableSlackbot(await base.find(recordId));
+  const fetchedApp = config.apps.find((i) => i.name == appName);
+  if (!fetchedApp) return;
 
   await client.views.publish({
     user_id: body.user.id,
     view: {
       type: "home",
-      blocks: singleApp(record),
+      blocks: singleApp(fetchedApp),
     },
   });
 });
@@ -122,8 +83,8 @@ app.action("tag", async ({ body, client, ack, ...args }) => {
 
   const category = action.selected_option.value;
 
-  const apps = await getApps(
-    (i) => category == "All" || i.tags.includes(category)
+  const apps = config.apps.filter(
+    (i) => category == "All" || i.categories.includes(category)
   );
 
   await client.views.publish({
@@ -132,23 +93,21 @@ app.action("tag", async ({ body, client, ack, ...args }) => {
       type: "home",
       blocks: appHomeBlocks({
         apps,
-        tags,
-        selected_tag: tags.find((i) => i.value == category),
+        tags: tags(),
+        selected_tag: tags().find((i) => i.value == category),
       }),
     },
   });
 });
 
 app.event("app_home_opened", async ({ client, event }) => {
-  const apps = await getApps();
-
   await client.views.publish({
     user_id: event.user,
     view: {
       type: "home",
       blocks: appHomeBlocks({
-        apps,
-        tags,
+        apps: config.apps,
+        tags: tags(),
         selected_tag: {
           text: { type: "plain_text", text: "All categories" },
           value: "All",
@@ -159,6 +118,8 @@ app.event("app_home_opened", async ({ client, event }) => {
 });
 
 (async () => {
+  config = yaml.load(await readFile("apps.yaml", "utf-8")) as YamlConfig;
+
   await app.start(3000);
   console.log("app started 🚀");
 })();

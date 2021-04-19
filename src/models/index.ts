@@ -1,11 +1,15 @@
 export interface Slackbot {
+  name: string;
+  bot_id: string;
+  description: string;
+  categories: string[];
+  repository: string;
   maintainer: string;
   emoji: string | undefined;
-  botId: string;
-  name: string;
-  description: string;
-  repository: string;
-  tags: string[];
-  id: string;
-  gettingStarted: string;
+  getting_started: string;
+}
+
+export interface YamlConfig {
+  categories: string[];
+  apps: Slackbot[];
 }

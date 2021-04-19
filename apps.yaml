@@ -1,0 +1,49 @@
+categories:
+  - Community
+  - Games
+  - HN
+  - Utilities
+apps:
+  - name: dinopoll
+    bot_id: U01RR8KDEPQ
+    description: "Quick, easy, and free polling for Hack Club"
+    categories:
+      - Utilities
+    repository: https://github.com/cjdenio/dinopoll
+    maintainer: <@U013B6CPV62>
+    emoji: confused-dino
+    getting_started: |
+      To create a poll, just run `/dinopoll` in the channel that you'd like to share the poll in!
+
+  - name: Uno
+    bot_id: U01AAM4E1M4
+    description: "Unwind with a game of Uno, right in Slack!"
+    categories:
+      - Games
+      - HN
+    repository: https://github.com/cjdenio/slack-uno
+    maintainer: <@U013B6CPV62>
+    emoji: unoreverse
+    getting_started: |
+      To get started, head over to <@U01AAM4E1M4> and start a game!
+
+  - name: The Teller
+    bot_id: U01EJ84MYS0
+    description: "Manage your HN account"
+    categories:
+      - Community
+      - HN
+    repository: https://github.com/rishiosaur/teller
+    maintainer: <@UHFEGV147>
+    emoji: money_with_wings
+
+  - name: Prox2
+    bot_id: U01HXAHD6N5
+    description: "Anonymous posting for <#CNMU9L92Q>"
+    categories:
+      - Community
+    repository: https://github.com/anirudhb/prox2
+    maintainer: <@U01D9DWGEB0>
+    emoji: see_no_evil
+    getting_started: |
+      To submit a confession, DM <@U01HXAHD6N5> with your confession's text. You'll be asked to confirm, then it'll be put through a short review process.

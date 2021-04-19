@@ -52,7 +52,7 @@ export default function singleApp(app: Slackbot): (Block | KnownBlock)[] {
     },
   ];
 
-  if (app.gettingStarted) {
+  if (app.getting_started) {
     blocks.push(
       {
         type: "header",
@@ -67,7 +67,7 @@ export default function singleApp(app: Slackbot): (Block | KnownBlock)[] {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: app.gettingStarted || "null",
+          text: app.getting_started || "null",
         },
       }
     );

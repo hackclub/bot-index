@@ -42,13 +42,13 @@ export default function appHomeBlocks({
               ":" +
               i.emoji +
               ": *" +
-              (i.botId ? `<@${i.botId}>` : i.name) +
+              (i.bot_id ? `<@${i.bot_id}>` : i.name) +
               "* - " +
               i.description,
           },
           accessory: {
             type: "button",
-            action_id: `view:${i.id}`,
+            action_id: `view:${i.name}`,
             text: {
               type: "plain_text",
               text: "Info",
@@ -60,7 +60,7 @@ export default function appHomeBlocks({
           elements: [
             {
               type: "mrkdwn",
-              text: `:label: ${i.tags
+              text: `:label: ${i.categories
                 .map((i: string) => "*" + i + "*")
                 .join(", ")}`,
             },
