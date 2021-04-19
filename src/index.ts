@@ -56,10 +56,26 @@ function parseAirtableSlackbot(record: any): Slackbot {
   };
 }
 
+async function getApps(filter?: (e: Slackbot) => boolean): Promise<Slackbot[]> {
+  let apps = (
+    await base
+      .select({
+        filterByFormula: "Enabled",
+      })
+      .all()
+  ).map(parseAirtableSlackbot);
+
+  if (filter) {
+    apps = apps.filter(filter);
+  }
+
+  return apps;
+}
+
 app.action("back", async ({ client, body, ack }) => {
   await ack();
 
-  const apps = (await base.select().all()).map(parseAirtableSlackbot);
+  const apps = await getApps();
 
   await client.views.publish({
     user_id: body.user.id,
@@ -106,9 +122,9 @@ app.action("tag", async ({ body, client, ack, ...args }) => {
 
   const category = action.selected_option.value;
 
-  const apps = (await base.select().all())
-    .map(parseAirtableSlackbot)
-    .filter((i) => category == "All" || i.tags.includes(category));
+  const apps = await getApps(
+    (i) => category == "All" || i.tags.includes(category)
+  );
 
   await client.views.publish({
     user_id: body.user.id,
@@ -124,7 +140,7 @@ app.action("tag", async ({ body, client, ack, ...args }) => {
 });
 
 app.event("app_home_opened", async ({ client, event }) => {
-  const apps = (await base.select().all()).map(parseAirtableSlackbot);
+  const apps = await getApps();
 
   await client.views.publish({
     user_id: event.user,
