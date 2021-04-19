@@ -71,5 +71,15 @@ export default function appHomeBlocks({
         },
       ];
     }),
+    {
+      type: "context",
+      elements: [
+        {
+          type: "mrkdwn",
+          text:
+            "Want to add your own? Check out https://github.com/hackclub/bot-index for more info!",
+        },
+      ],
+    },
   ];
 }
