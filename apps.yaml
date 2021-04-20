@@ -52,9 +52,9 @@ apps:
     bot_id: U01TG0Y2WR5
     description: "Create and share beautiful code images directly from slack!"
     categories:
-      - Utlities
+      - Utilities
     repository: https://github.com/faisalsayed10/carbon-slack
     maintainer: <@U014ND5P1N2>
     emoji: sparkles
     getting_started: |
-      To create an image, invoke the /carbon command and fill out the required details!
+      To create an image, invoke the `/carbon` command and fill out the required details!
