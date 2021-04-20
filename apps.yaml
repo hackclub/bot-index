@@ -47,3 +47,14 @@ apps:
     emoji: see_no_evil
     getting_started: |
       To submit a confession, DM <@U01HXAHD6N5> with your confession's text. You'll be asked to confirm, then it'll be put through a short review process.
+
+  - name: Carbon for Slack
+    bot_id: U01TG0Y2WR5
+    description: "Create and share beautiful code images directly from slack!"
+    categories:
+      - Utlities
+    repository: https://github.com/faisalsayed10/carbon-slack
+    maintainer: <@U014ND5P1N2>
+    emoji: sparkles
+    getting_started: |
+      To create an image, invoke the /carbon command and fill out the required details!
