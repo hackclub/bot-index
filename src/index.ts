@@ -117,8 +117,25 @@ app.event("app_home_opened", async ({ client, event }) => {
   });
 });
 
+function sortConfig(config: YamlConfig): YamlConfig {
+  config.apps.sort((a, b) => {
+    if (a.name < b.name) {
+      return -1;
+    } else if (a.name > b.name) {
+      return 1;
+    }
+
+    return 0;
+  });
+  config.categories.sort();
+
+  return config;
+}
+
 (async () => {
-  config = yaml.load(await readFile("apps.yaml", "utf-8")) as YamlConfig;
+  config = sortConfig(
+    yaml.load(await readFile("apps.yaml", "utf-8")) as YamlConfig
+  );
 
   await app.start(3000);
   console.log("app started 🚀");

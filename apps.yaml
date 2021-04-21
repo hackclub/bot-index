@@ -58,3 +58,14 @@ apps:
     emoji: sparkles
     getting_started: |
       To create an image, invoke the `/carbon` command and fill out the required details!
+
+  - name: BirthdayBot
+    bot_id: U014PSX0H2T
+    description: "Get a personalized announcement in <#C0266FRGV> on your special day"
+    categories:
+      - Community
+    repository: https://github.com/cjdenio/birthdaybot
+    maintainer: <@U013B6CPV62>
+    emoji: birthday
+    getting_started: |
+      To sign up, just type `/birthday` in any channel!
